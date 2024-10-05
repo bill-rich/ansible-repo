@@ -14,7 +14,7 @@
         state: present
 
     - name: Check if the root partition is encrypted
-      shell: lsblk -o NAME,TYPE,FSTYPE | grep crypt
+      shell: lsblk -o NAME,TYPE,FSTYPE | grep crypt | grep root
       register: encryption_status
       ignore_errors: true
 
@@ -31,3 +31,39 @@
       fail:
         msg: "Disk encryption is not enabled on this system!"
       when: encryption_status.stdout == ""
+
+    - name: Report compliance status to central server
+      uri:
+        url: "http://localhost/api/report"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+        body_format: json
+        body: >
+          {
+            "hostname": "{{ ansible_hostname }}",
+            "compliance_status": "Compliant",
+            "timestamp": "{{ ansible_date_time.iso8601 }}",
+            "details": "{{ encryption_status.stdout }}"
+          }
+        status_code: 200
+      when: encryption_status.stdout != ""
+      ignore_errors: yes
+
+    - name: Report non-compliance status to central server
+      uri:
+        url: "http://localhost/api/report"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+        body_format: json
+        body: >
+          {
+            "hostname": "{{ ansible_hostname }}",
+            "compliance_status": "Non-compliant",
+            "timestamp": "{{ ansible_date_time.iso8601 }}",
+            "details": "Disk encryption is not enabled."
+          }
+        status_code: 200
+      when: encryption_status.stdout == ""
+      ignore_errors: yes
