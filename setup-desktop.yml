@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: laptopB4
   become: true
   tasks:
     - name: Ensure the system is up-to-date
