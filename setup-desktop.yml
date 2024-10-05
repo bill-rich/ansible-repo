@@ -7,6 +7,9 @@
         update_cache: yes
         upgrade: yes
 
+    - name: Update AUR packages
+      shell: yay -Syu --noconfirm
+
     - name: Install common desktop packages
       pacman:
         name:
