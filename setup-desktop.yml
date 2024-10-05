@@ -1,5 +1,5 @@
 ---
-- hosts: laptopB4
+- hosts: localhost
   become: true
   tasks:
     - name: Ensure the system is up-to-date
@@ -10,10 +10,7 @@
     - name: Install common desktop packages
       pacman:
         name:
-          - vim
-          - git
-          - curl
-          - htop
+          - neovim
         state: present
 
     - name: Check if the root partition is encrypted
