@@ -1,0 +1,13 @@
+[Unit]
+Description=Run ansible-pull to update configuration
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/ansible-pull -U https://github.com/your_org/ansible-repo.git -d /etc/ansible -i localhost setup.yml
+WorkingDirectory=/root
+Environment="HOME=/root"
+
+[Install]
+WantedBy=multi-user.target
