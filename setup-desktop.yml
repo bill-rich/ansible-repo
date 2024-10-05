@@ -1,0 +1,28 @@
+---
+- hosts: localhost
+  become: true
+  tasks:
+    - name: Ensure the system is up-to-date
+      pacman:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Install common desktop packages
+      pacman:
+        name:
+          - vim
+          - git
+          - curl
+          - htop
+        state: present
+
+    - name: Check if the root partition is encrypted
+      command: lsblk -o NAME,TYPE,FSTYPE | grep crypt
+      register: encryption_status
+      ignore_errors: true
+
+    - name: Fail the task if the disk is not encrypted
+      fail:
+        msg: "Disk encryption is not enabled on this system!"
+      when: encryption_status.stdout == ""
+
