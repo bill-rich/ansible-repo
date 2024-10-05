@@ -7,14 +7,19 @@
         update_cache: yes
         upgrade: yes
 
-    - name: Update AUR packages
-      shell: yay -Syu --noconfirm
-
     - name: Install common desktop packages
       pacman:
         name:
           - neovim
         state: present
+
+    - name: Update system with yay as user hrich
+      become_user: hrich
+      shell: yay -Syu --noconfirm
+      args:
+        chdir: "/home/hrich"
+      environment:
+        HOME: "/home/hrich"
 
     - name: Check if the root partition is encrypted
       shell: lsblk -o NAME,TYPE,FSTYPE | grep crypt | grep root
@@ -37,7 +42,7 @@
 
     - name: Report compliance status to central server
       uri:
-        url: "http://localhost:5000/api/report"
+        url: "https://ansible-compliance-server-165d2ac21a73.herokuapp.com/api/report"
         method: POST
         headers:
           Content-Type: "application/json"
@@ -55,7 +60,7 @@
 
     - name: Report non-compliance status to central server
       uri:
-        url: "http://localhost:5000/api/report"
+        url: "https://ansible-compliance-server-165d2ac21a73.herokuapp.com/api/report"
         method: POST
         headers:
           Content-Type: "application/json"
