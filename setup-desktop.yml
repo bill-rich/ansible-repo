@@ -34,7 +34,7 @@
 
     - name: Report compliance status to central server
       uri:
-        url: "http://localhost/api/report"
+        url: "https://localhost/api/report"
         method: POST
         headers:
           Content-Type: "application/json"
@@ -52,7 +52,7 @@
 
     - name: Report non-compliance status to central server
       uri:
-        url: "http://localhost/api/report"
+        url: "https://localhost/api/report"
         method: POST
         headers:
           Content-Type: "application/json"
