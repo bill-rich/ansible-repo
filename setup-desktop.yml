@@ -14,12 +14,20 @@
         state: present
 
     - name: Check if the root partition is encrypted
-      command: lsblk -o NAME,TYPE,FSTYPE | grep crypt
+      shell: lsblk -o NAME,TYPE,FSTYPE | grep crypt
       register: encryption_status
       ignore_errors: true
+
+    - name: Display encryption status
+      debug:
+        msg: "Encryption status: {{ encryption_status.stdout }}"
+
+    - name: Mark system as encrypted if 'crypt' is found
+      set_fact:
+        disk_encrypted: true
+      when: encryption_status.stdout != ""
 
     - name: Fail the task if the disk is not encrypted
       fail:
         msg: "Disk encryption is not enabled on this system!"
       when: encryption_status.stdout == ""
-
